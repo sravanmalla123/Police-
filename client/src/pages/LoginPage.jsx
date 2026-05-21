@@ -1,62 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, setAuthToken } from '../services/api.js';
-import { Avatar, AVATAR_TEMPLATES } from '../components/Avatar.jsx';
 
 const roles = ['CI', 'SI', 'Constable', 'Other'];
-
-const demoProfiles = [
-  {
-    id: 'demo_comm',
-    name: 'Commissioner',
-    roleText: 'Commissioner',
-    rank: 'admin',
-    loginId: 'commissioner',
-    password: 'admin123',
-    isAdmin: true,
-    avatarId: 'avatar_commissioner'
-  },
-  {
-    id: 'demo_ci',
-    name: 'Circle Inspector',
-    roleText: 'CI (ci001)',
-    rank: 'CI',
-    loginId: 'ci001',
-    password: 'passCI',
-    isAdmin: false,
-    avatarId: 'avatar_ci'
-  },
-  {
-    id: 'demo_si',
-    name: 'Sub Inspector',
-    roleText: 'SI (si001)',
-    rank: 'SI',
-    loginId: 'si001',
-    password: 'passSI',
-    isAdmin: false,
-    avatarId: 'avatar_si'
-  },
-  {
-    id: 'demo_constable',
-    name: 'Constable (const001)',
-    roleText: 'Constable',
-    rank: 'Constable',
-    loginId: 'const001',
-    password: 'passConst',
-    isAdmin: false,
-    avatarId: 'avatar_constable'
-  },
-  {
-    id: 'demo_special_ops',
-    name: 'Tactical Support',
-    roleText: 'Staff (staff001)',
-    rank: 'Other',
-    loginId: 'staff001',
-    password: 'passStaff',
-    isAdmin: false,
-    avatarId: 'avatar_special_ops'
-  }
-];
 
 function LoginPage({ onLogin, theme, toggleTheme }) {
   const navigate = useNavigate();
@@ -65,38 +11,16 @@ function LoginPage({ onLogin, theme, toggleTheme }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Avatar-specific states
-  const [avatarType, setAvatarType] = useState('preset');
-  const [selectedAvatar, setSelectedAvatar] = useState('avatar_ci');
-  const [customUrl, setCustomUrl] = useState('');
-
   const canSubmit = useMemo(() => (payload.loginId || '').trim() && (payload.password || '').trim(), [payload]);
 
   useEffect(() => {
     setError('');
     setPayload(prev => ({ ...prev, loginId: '', password: '' }));
-    // Auto adjust default avatar depending on access mode
-    if (isAdmin) {
-      setSelectedAvatar('avatar_commissioner');
-    } else {
-      setSelectedAvatar('avatar_ci');
-    }
   }, [isAdmin]);
 
   const handleChange = event => {
     const { name, value } = event.target;
     setPayload(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleQuickProfileClick = (profile) => {
-    setIsAdmin(profile.isAdmin);
-    setPayload({
-      loginId: profile.loginId,
-      password: profile.password,
-      role: profile.isAdmin ? 'CI' : profile.rank
-    });
-    setSelectedAvatar(profile.avatarId);
-    setAvatarType('preset');
   };
 
   const handleSubmit = async event => {
@@ -120,10 +44,7 @@ function LoginPage({ onLogin, theme, toggleTheme }) {
       const resp = await loginUser(body);
       const normalized = {
         token: resp.token,
-        user: {
-          ...resp.user,
-          avatar: selectedAvatar
-        },
+        user: resp.user,
         role: resp.user?.role || 'staff'
       };
       localStorage.setItem('police-portal-auth', JSON.stringify(normalized));
@@ -179,34 +100,6 @@ function LoginPage({ onLogin, theme, toggleTheme }) {
       </div>
 
       <div className="page-body">
-        {/* Quick Profiles Section */}
-        <div className="card quick-profiles-card-container">
-          <h2 style={{ border: 'none', padding: 0, marginBottom: '12px' }}>Operational Quick Sign-In</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>
-            Select a demo officer profile below to automatically populate credentials and assign their authorized tactical avatar.
-          </p>
-          <div className="quick-profiles-grid">
-            {demoProfiles.map(profile => {
-              const isActive = payload.loginId === profile.loginId && isAdmin === profile.isAdmin;
-              return (
-                <div 
-                  key={profile.id}
-                  className={`quick-profile-card ${isActive ? 'active' : ''}`}
-                  onClick={() => handleQuickProfileClick(profile)}
-                >
-                  <div className="quick-profile-avatar-wrapper">
-                    <Avatar avatarId={profile.avatarId} className="avatar-option-svg" />
-                  </div>
-                  <div className="quick-profile-info">
-                    <h4>{profile.name}</h4>
-                    <p>{profile.roleText}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
         <div className="grid-2">
           <div className="card">
             <h2>Sign In</h2>
@@ -253,65 +146,6 @@ function LoginPage({ onLogin, theme, toggleTheme }) {
               <div className="form-field">
                 <label htmlFor="password">Password</label>
                 <input id="password" name="password" type="password" value={payload.password} onChange={handleChange} placeholder="Enter password" />
-              </div>
-
-              <div className="form-field">
-                <label>Profile Picture Option</label>
-                <div className="avatar-selection-tabs">
-                  <button
-                    type="button"
-                    className={`avatar-tab-btn ${avatarType === 'preset' ? 'active' : ''}`}
-                    onClick={() => setAvatarType('preset')}
-                  >
-                    Preset Avatars
-                  </button>
-                  <button
-                    type="button"
-                    className={`avatar-tab-btn ${avatarType === 'custom' ? 'active' : ''}`}
-                    onClick={() => setAvatarType('custom')}
-                  >
-                    Custom URL
-                  </button>
-                </div>
-
-                {avatarType === 'preset' ? (
-                  <div className="avatar-selector-grid">
-                    {AVATAR_TEMPLATES.map(temp => (
-                      <button
-                        key={temp.id}
-                        type="button"
-                        className={`avatar-option-btn ${selectedAvatar === temp.id ? 'active' : ''}`}
-                        onClick={() => setSelectedAvatar(temp.id)}
-                        title={temp.name}
-                      >
-                        <div className="avatar-option-inner">
-                          <Avatar avatarId={temp.id} className="avatar-option-svg" />
-                        </div>
-                        <span className="avatar-option-label">{temp.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="custom-avatar-url-field">
-                    <input
-                      type="text"
-                      placeholder="Paste image URL (https://...)"
-                      value={customUrl}
-                      onChange={(e) => {
-                        setCustomUrl(e.target.value);
-                        setSelectedAvatar(e.target.value || 'avatar_ci');
-                      }}
-                    />
-                    <div className="avatar-preview-container">
-                      <div className="avatar-preview-box">
-                        <Avatar avatarId={customUrl} className="avatar-option-svg" />
-                      </div>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                        Live Custom Preview
-                      </span>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {error && <div className="alert error">{error}</div>}

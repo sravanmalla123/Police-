@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fetchMyReports, submitReport, setAuthToken, fetchBulletins } from '../services/api.js';
-import { Avatar } from '../components/Avatar.jsx';
 
 function StaffDashboard({ auth, onLogout, theme, toggleTheme }) {
   const [reports, setReports] = useState([]);
@@ -235,9 +234,7 @@ function StaffDashboard({ auth, onLogout, theme, toggleTheme }) {
         </div>
         <div className="top-bar">
           <div className="top-bar-user">
-            <div className="dashboard-user-avatar">
-              <Avatar avatarId={auth?.user?.avatar} />
-            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <span>Rank: <strong>{auth?.user?.role}</strong> | {auth?.user?.name}</span>
           </div>
           <div>
