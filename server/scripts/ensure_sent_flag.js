@@ -2,13 +2,40 @@ import sqlite3 from 'sqlite3';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import fs from 'node:fs';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dbFile = process.env.RENDER === 'true'
-  ? '/tmp/app.db'
-  : path.resolve(__dirname, '../data/app.db');
+let dbFile = path.resolve(__dirname, '../data/app.db');
+
+try {
+  const dbDir = path.dirname(dbFile);
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+  const testFile = path.join(dbDir, '.write_test');
+  fs.writeFileSync(testFile, 'test');
+  fs.unlinkSync(testFile);
+} catch (err) {
+  dbFile = '/tmp/app.db';
+  try {
+    const dbDir = path.dirname(dbFile);
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true });
+    }
+    const testFile = path.join(dbDir, '.write_test');
+    fs.writeFileSync(testFile, 'test');
+    fs.unlinkSync(testFile);
+  } catch (err2) {
+    dbFile = ':memory:';
+  }
+}
+
 const sqlite = sqlite3.verbose();
 const db = new sqlite.Database(dbFile);
+db.on('error', (err) => {
+  console.error('Migration DB connection error:', err);
+});
 
 db.serialize(() => {
   db.all(`PRAGMA table_info(reports);`, (err, rows) => {

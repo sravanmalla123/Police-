@@ -7,18 +7,40 @@ import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dbFile = process.env.RENDER === 'true'
-  ? '/tmp/app.db'
-  : path.resolve(__dirname, '../data/app.db');
+let dbFile = path.resolve(__dirname, '../data/app.db');
 
-// Ensure database directory exists (essential for cloud platforms like Render where empty git folders are ignored)
-const dbDir = path.dirname(dbFile);
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
+try {
+  const dbDir = path.dirname(dbFile);
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+  const testFile = path.join(dbDir, '.write_test');
+  fs.writeFileSync(testFile, 'test');
+  fs.unlinkSync(testFile);
+} catch (err) {
+  console.warn(`Default database directory is not writable. Falling back to /tmp/app.db. Error: ${err.message}`);
+  dbFile = '/tmp/app.db';
+  try {
+    const dbDir = path.dirname(dbFile);
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true });
+    }
+    const testFile = path.join(dbDir, '.write_test');
+    fs.writeFileSync(testFile, 'test');
+    fs.unlinkSync(testFile);
+  } catch (err2) {
+    console.warn(`Fallback path /tmp/app.db is not writable. Using in-memory database. Error: ${err2.message}`);
+    dbFile = ':memory:';
+  }
 }
+
+console.log(`Database configuration selected path: ${dbFile}`);
 
 const sqlite = sqlite3.verbose();
 const db = new sqlite.Database(dbFile);
+db.on('error', (err) => {
+  console.error('Database connection/runtime error:', err);
+});
 const run = promisify(db.run.bind(db));
 const get = promisify(db.get.bind(db));
 const all = promisify(db.all.bind(db));
