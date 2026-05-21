@@ -1319,3 +1319,280 @@ body.light-theme .theme-toggle-btn-small:hover {
   background: rgba(59, 130, 246, 0.15);
   border-color: rgba(59, 130, 246, 0.4);
 }
+
+/* ==========================================================================
+   PICTURES & AVATAR SELECTION STYLING
+   ========================================================================== */
+
+.quick-profiles-card-container {
+  margin-bottom: 24px;
+}
+
+.quick-profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.quick-profile-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-profile-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 10px 20px -5px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(59, 130, 246, 0.15);
+  transform: translateY(-4px);
+}
+
+.quick-profile-card.active {
+  border-color: var(--accent-gold);
+  background: rgba(251, 191, 36, 0.05);
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
+}
+
+.quick-profile-avatar-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-profile-card:hover .quick-profile-avatar-wrapper {
+  transform: scale(1.08);
+  border-color: var(--primary);
+}
+
+.quick-profile-info h4 {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.quick-profile-info p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Light Theme overrides for quick profiles */
+body.light-theme .quick-profile-card {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .quick-profile-card:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 
+    0 10px 20px -5px rgba(59, 130, 246, 0.1),
+    0 0 15px rgba(59, 130, 246, 0.15);
+}
+
+body.light-theme .quick-profile-card.active {
+  border-color: #1e3a8a;
+  background: rgba(30, 58, 138, 0.03);
+}
+
+body.light-theme .quick-profile-info h4 {
+  color: #0f172a;
+}
+
+/* Avatar Tabs Selection inside Form */
+.avatar-selection-tabs {
+  display: flex;
+  background: rgba(5, 7, 12, 0.5);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 12px;
+}
+
+.avatar-tab-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.avatar-tab-btn:hover {
+  color: #ffffff;
+}
+
+.avatar-tab-btn.active {
+  background: var(--primary-gradient);
+  color: #000000;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
+}
+
+body.light-theme .avatar-selection-tabs {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .avatar-tab-btn.active {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.25);
+}
+
+/* Avatar Selector Grid */
+.avatar-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.avatar-option-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 2px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.avatar-option-inner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 2px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-option-btn:hover .avatar-option-inner {
+  transform: scale(1.1);
+  border-color: var(--border-strong);
+}
+
+.avatar-option-btn.active .avatar-option-inner {
+  border-color: var(--accent-gold);
+  background: rgba(251, 191, 36, 0.1);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
+
+body.light-theme .avatar-option-btn.active .avatar-option-inner {
+  border-color: #1e3a8a;
+  background: rgba(30, 58, 138, 0.08);
+  box-shadow: 0 0 10px rgba(30, 58, 138, 0.25);
+}
+
+.avatar-option-label {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.avatar-option-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Custom Avatar Preview */
+.custom-avatar-url-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.avatar-preview-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(5, 7, 12, 0.3);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+}
+
+body.light-theme .avatar-preview-container {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.avatar-preview-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+body.light-theme .avatar-preview-box {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Compact Header Avatar Display */
+.dashboard-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.dashboard-user-avatar:hover {
+  transform: scale(1.08);
+  border-color: #ffffff;
+}
+
+body.light-theme .dashboard-user-avatar {
+  border-color: rgba(30, 58, 138, 0.25);
+  background: rgba(30, 58, 138, 0.05);
+}
+
+body.light-theme .dashboard-user-avatar:hover {
+  border-color: #1e3a8a;
+}
+

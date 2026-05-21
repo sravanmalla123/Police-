@@ -8,6 +8,8 @@ import {
   fetchBulletins, 
   broadcastBulletin 
 } from '../services/api.js';
+import { Avatar } from '../components/Avatar.jsx';
+
 
 const priorities = ['All', 'High', 'Medium', 'Low'];
 const statuses = ['All', 'pending', 'in_review', 'resolved'];
@@ -277,7 +279,9 @@ function AdminDashboard({ auth, onLogout, theme, toggleTheme }) {
         </div>
         <div className="top-bar">
           <div className="top-bar-user">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <div className="dashboard-user-avatar">
+              <Avatar avatarId={auth?.user?.avatar} />
+            </div>
             <span>Dashboard: <strong>Commissioner</strong> | {auth?.user?.name}</span>
           </div>
           <button 
