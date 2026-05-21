@@ -15,7 +15,7 @@ function App() {
   });
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('police-portal-theme');
-    return saved || 'dark';
+    return saved || 'light';
   });
   const navigate = useNavigate();
 
