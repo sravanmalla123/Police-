@@ -7,7 +7,9 @@ import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dbFile = path.resolve(__dirname, '../data/app.db');
+const dbFile = process.env.RENDER === 'true'
+  ? '/tmp/app.db'
+  : path.resolve(__dirname, '../data/app.db');
 
 // Ensure database directory exists (essential for cloud platforms like Render where empty git folders are ignored)
 const dbDir = path.dirname(dbFile);

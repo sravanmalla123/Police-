@@ -4,7 +4,9 @@ import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dbFile = path.resolve(__dirname, '../data/app.db');
+const dbFile = process.env.RENDER === 'true'
+  ? '/tmp/app.db'
+  : path.resolve(__dirname, '../data/app.db');
 const sqlite = sqlite3.verbose();
 const db = new sqlite.Database(dbFile);
 

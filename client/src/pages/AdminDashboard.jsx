@@ -85,7 +85,8 @@ function AdminDashboard({ auth, onLogout }) {
     // open SSE connection for real-time synchronization
     let es;
     try {
-      es = new EventSource(`/api/reports/stream?token=${auth?.token || ''}`);
+      const apiBase = import.meta.env.VITE_API_URL || '/api';
+      es = new EventSource(`${apiBase}/reports/stream?token=${auth?.token || ''}`);
       
       es.addEventListener('new_report', e => {
         try {
