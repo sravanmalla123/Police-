@@ -59,7 +59,10 @@ function LoginPage({ onLogin, theme, toggleTheme }) {
       onLogin(normalized);
       navigate(normalized.role === 'admin' ? '/admin' : '/staff');
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to login. Please check your credentials.');
+      setError(
+        err.response?.data?.message || 
+        `${err.message || 'Unable to login.'} (API: ${import.meta.env.VITE_API_URL || '/api'})`
+      );
     } finally {
       setLoading(false);
     }

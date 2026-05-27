@@ -38,8 +38,8 @@ export async function loginUser({ loginId, password, role, accessMode }) {
     selectedRole = 'Other';
   }
 
-  // Check role match
-  if (user.role !== selectedRole) {
+  // Check role match (bypassed for demostaff@website.com to allow testing different officer ranks)
+  if (user.role !== selectedRole && user.employee_id !== 'demostaff@website.com') {
     const err = new Error(`Account role is "${user.role}", but logged in as "${selectedRole}".`);
     err.status = 403;
     throw err;
@@ -58,10 +58,12 @@ export async function loginUser({ loginId, password, role, accessMode }) {
     throw err;
   }
 
+  const resolvedRole = user.employee_id === 'demostaff@website.com' ? selectedRole : user.role;
+
   const token = signToken({ 
     userId: user.id, 
     employeeId: user.employee_id,
-    role: user.role, 
+    role: resolvedRole, 
     name: user.name, 
     accessMode: selectedAccessMode 
   });
@@ -72,7 +74,7 @@ export async function loginUser({ loginId, password, role, accessMode }) {
       id: user.id, 
       employee_id: user.employee_id,
       name: user.name, 
-      role: user.role, 
+      role: resolvedRole, 
       zone: user.zone, 
       division: user.division, 
       reporting_station: user.reporting_station,
@@ -107,6 +109,28 @@ export async function seedUsers() {
       ['commissioner', 'Commissioner', 'admin', hash, 1]
     );
     console.log('✅ Commissioner account seeded.');
+  }
+
+  // Seed Demo Admin (for recruiters/testers)
+  const demoAdmin = await db.get("SELECT id FROM users WHERE employee_id = 'demo@website.com'");
+  if (!demoAdmin) {
+    const hash = await bcrypt.hash('demo123', SALT_ROUNDS);
+    await db.run(
+      'INSERT INTO users (employee_id, name, role, password, is_admin, access_modes) VALUES (?, ?, ?, ?, ?, ?)',
+      ['demo@website.com', 'Demo Admin', 'admin', hash, 1, 'admin']
+    );
+    console.log('✅ Demo Admin account seeded.');
+  }
+
+  // Seed Demo Staff (for recruiters/testers)
+  const demoStaff = await db.get("SELECT id FROM users WHERE employee_id = 'demostaff@website.com'");
+  if (!demoStaff) {
+    const hash = await bcrypt.hash('demo123', SALT_ROUNDS);
+    await db.run(
+      'INSERT INTO users (employee_id, name, role, password, is_admin, zone, division, access_modes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      ['demostaff@website.com', 'Demo Staff', 'CI', hash, 0, 'West', 'West', 'SB Control,SB Periscope,SB DSR']
+    );
+    console.log('✅ Demo Staff account seeded.');
   }
 
   const staffEnvMap = [
