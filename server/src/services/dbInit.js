@@ -121,6 +121,12 @@ export async function initializeDatabase() {
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    // Optimize SQLite query latency with table indexes
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_reports_user_id ON reports(user_id)`);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status)`);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_reports_priority ON reports(priority)`);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_reports_access_mode ON reports(access_mode)`);
   }
 
   // Dynamic migration: add remarks column if missing

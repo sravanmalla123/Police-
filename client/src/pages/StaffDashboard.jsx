@@ -54,7 +54,8 @@ function StaffDashboard({ auth, onLogout, theme, toggleTheme }) {
     return null;
   }, [auth?.token]);
   const [mapInstance, setMapInstance] = useState(null);
-  const [mapMarker, setMapMarker] = useState(null);
+  const mapMarkerRef = useRef(null);
+  const tileLayerRef = useRef(null);
   const [bulletins, setBulletins] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
@@ -76,19 +77,31 @@ function StaffDashboard({ auth, onLogout, theme, toggleTheme }) {
 
     const map = window.L.map('staff-map').setView([15.9129, 79.7400], 7); // Center of AP
     
-    const tileUrl = theme === 'light'
+    const initialTileUrl = theme === 'light'
       ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
       : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 
-    window.L.tileLayer(tileUrl, {
+    const tileLayer = window.L.tileLayer(initialTileUrl, {
       attribution: '&copy; OpenStreetMap &copy; CartoDB'
     }).addTo(map);
 
+    tileLayerRef.current = tileLayer;
     setMapInstance(map);
 
     return () => {
       map.remove();
+      setMapInstance(null);
+      mapMarkerRef.current = null;
     };
+  }, []);
+
+  useEffect(() => {
+    if (tileLayerRef.current) {
+      const newTileUrl = theme === 'light'
+        ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      tileLayerRef.current.setUrl(newTileUrl);
+    }
   }, [theme]);
 
   useEffect(() => {
@@ -117,8 +130,8 @@ function StaffDashboard({ auth, onLogout, theme, toggleTheme }) {
     const lng = parseFloat(form.longitude);
 
     if (!isNaN(lat) && !isNaN(lng)) {
-      if (mapMarker) {
-        mapMarker.setLatLng([lat, lng]);
+      if (mapMarkerRef.current) {
+        mapMarkerRef.current.setLatLng([lat, lng]);
       } else {
         const marker = window.L.circleMarker([lat, lng], {
           radius: 8,
@@ -128,13 +141,13 @@ function StaffDashboard({ auth, onLogout, theme, toggleTheme }) {
           opacity: 1,
           fillOpacity: 0.8
         }).addTo(mapInstance);
-        setMapMarker(marker);
+        mapMarkerRef.current = marker;
         mapInstance.setView([lat, lng], 10);
       }
     } else {
-      if (mapMarker) {
-        mapInstance.removeLayer(mapMarker);
-        setMapMarker(null);
+      if (mapMarkerRef.current) {
+        mapInstance.removeLayer(mapMarkerRef.current);
+        mapMarkerRef.current = null;
       }
     }
   }, [mapInstance, form.latitude, form.longitude]);
@@ -421,8 +434,32 @@ function StaffDashboard({ auth, onLogout, theme, toggleTheme }) {
         }
       });
 
+      es.addEventListener('new_report', e => {
+        try {
+          const r = JSON.parse(e.data);
+          if (r.user_id === auth?.user?.id) {
+            setReports(prev => {
+              if (prev.some(x => x.id === r.id)) return prev;
+              return [r, ...prev];
+            });
+          }
+        } catch (_) {}
+      });
+
       es.addEventListener('report_updated', e => {
-        loadReports();
+        try {
+          const updated = JSON.parse(e.data);
+          if (updated.user_id === auth?.user?.id) {
+            setReports(prev => prev.map(r => r.id === updated.id ? updated : r));
+          }
+        } catch (_) {}
+      });
+
+      es.addEventListener('report_deleted', e => {
+        try {
+          const deleted = JSON.parse(e.data);
+          setReports(prev => prev.filter(r => r.id !== deleted.id));
+        } catch (_) {}
       });
     } catch (err) {
       // ignore

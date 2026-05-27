@@ -37,6 +37,7 @@ function AdminDashboard({ auth, onLogout, theme, toggleTheme }) {
   const [mapInstance, setMapInstance] = useState(null);
 
   const hasFitBoundsRef = useRef(false);
+  const tileLayerRef = useRef(null);
   const [lightbox, setLightbox] = useState(null);
 
   const [bulletinMessage, setBulletinMessage] = useState('');
@@ -168,26 +169,33 @@ function AdminDashboard({ auth, onLogout, theme, toggleTheme }) {
     const container = document.getElementById('map-radar');
     if (!container) return;
 
-    if (mapInstance) {
-      mapInstance.remove();
-    }
-
     const map = window.L.map('map-radar').setView([15.9129, 79.7400], 7); // Center of AP
     
-    const tileUrl = theme === 'light'
+    const initialTileUrl = theme === 'light'
       ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
       : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 
-    window.L.tileLayer(tileUrl, {
+    const tileLayer = window.L.tileLayer(initialTileUrl, {
       attribution: '&copy; OpenStreetMap &copy; CartoDB'
     }).addTo(map);
 
+    tileLayerRef.current = tileLayer;
     setMapInstance(map);
     hasFitBoundsRef.current = false;
 
     return () => {
       map.remove();
+      setMapInstance(null);
     };
+  }, []);
+
+  useEffect(() => {
+    if (tileLayerRef.current) {
+      const newTileUrl = theme === 'light'
+        ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      tileLayerRef.current.setUrl(newTileUrl);
+    }
   }, [theme]);
 
   useEffect(() => {

@@ -1,5 +1,22 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const cwdEnv = path.resolve(process.cwd(), '.env');
+const serverEnv = path.resolve(__dirname, '../../.env');
+
+if (fs.existsSync(cwdEnv)) {
+  dotenv.config({ path: cwdEnv });
+} else if (fs.existsSync(serverEnv)) {
+  dotenv.config({ path: serverEnv });
+} else {
+  dotenv.config();
+}
+
 
 const isProd = process.env.NODE_ENV === 'production';
 

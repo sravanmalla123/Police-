@@ -93,49 +93,21 @@ body::after {
   filter: blur(80px);
   opacity: 0.45;
   will-change: transform;
+  transform: translate3d(0, 0, 0); /* Force GPU composite layer */
 }
 
 body::before {
   top: -150px;
   left: -150px;
   background: radial-gradient(circle, rgba(29, 78, 216, 0.6) 0%, rgba(30, 64, 175, 0) 70%);
-  animation: floatOrbOne 25s infinite alternate ease-in-out;
 }
 
 body::after {
   bottom: -150px;
   right: -150px;
   background: radial-gradient(circle, rgba(124, 58, 237, 0.45) 0%, rgba(139, 92, 246, 0) 70%);
-  animation: floatOrbTwo 30s infinite alternate ease-in-out;
 }
 
-@keyframes floatOrbOne {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(120px, 80px, 0) scale(1.15);
-  }
-
-  100% {
-    transform: translate3d(-60px, 160px, 0) scale(0.9);
-  }
-}
-
-@keyframes floatOrbTwo {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(-140px, -110px, 0) scale(0.85);
-  }
-
-  100% {
-    transform: translate3d(80px, -60px, 0) scale(1.1);
-  }
-}
 
 /* App Layout & Shell */
 .app-shell {

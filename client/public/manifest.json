@@ -1,0 +1,17 @@
+{
+  "short_name": "AP Police",
+  "name": "Andhra Pradesh Police Command Center Portal",
+  "icons": [
+    {
+      "src": "/ap_police_logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#030308",
+  "theme_color": "#030308",
+  "display": "standalone",
+  "orientation": "any"
+}
