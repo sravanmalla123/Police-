@@ -73,7 +73,9 @@ if (USE_MYSQL) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = pathModule.default.dirname(__filename);
 
-  let dbFile = pathModule.default.resolve(__dirname, '../../data/app.db');
+  let dbFile = process.env.VERCEL
+    ? '/tmp/app.db'
+    : pathModule.default.resolve(__dirname, '../../data/app.db');
   try {
     const dbDir = pathModule.default.dirname(dbFile);
     if (!fs.default.existsSync(dbDir)) fs.default.mkdirSync(dbDir, { recursive: true });

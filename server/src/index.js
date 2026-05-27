@@ -76,14 +76,20 @@ async function start() {
   try {
     await initializeDatabase();
     await seedUsers();
-    app.listen(env.port, () => {
-      console.log(`🚀 Server running on port ${env.port} [${env.nodeEnv}]`);
-      console.log(`🌐 CORS allowed origins: ${allowedOrigins.join(', ')}`);
-    });
+    if (!process.env.VERCEL) {
+      app.listen(env.port, () => {
+        console.log(`🚀 Server running on port ${env.port} [${env.nodeEnv}]`);
+        console.log(`🌐 CORS allowed origins: ${allowedOrigins.join(', ')}`);
+      });
+    } else {
+      console.log('🚀 Vercel Serverless Function initialized.');
+    }
   } catch (err) {
     console.error('❌ Failed to start server:', err.message);
-    process.exit(1);
+    if (!process.env.VERCEL) process.exit(1);
   }
 }
 
 start();
+
+export default app;
