@@ -9,12 +9,14 @@ const __dirname = path.dirname(__filename);
 const cwdEnv = path.resolve(process.cwd(), '.env');
 const serverEnv = path.resolve(__dirname, '../../.env');
 
-if (fs.existsSync(cwdEnv)) {
-  dotenv.config({ path: cwdEnv });
-} else if (fs.existsSync(serverEnv)) {
-  dotenv.config({ path: serverEnv });
-} else {
-  dotenv.config();
+if (!process.env.VERCEL) {
+  if (fs.existsSync(cwdEnv)) {
+    dotenv.config({ path: cwdEnv });
+  } else if (fs.existsSync(serverEnv)) {
+    dotenv.config({ path: serverEnv });
+  } else {
+    dotenv.config();
+  }
 }
 
 
