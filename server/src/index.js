@@ -52,6 +52,28 @@ app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 // ── General rate limit ────────────────────────────────────────────────────────
 app.use('/api', apiLimiter);
 
+// ── Ensure DB is initialized before handling any /api request ─────────────────
+let initPromise = null;
+function ensureDb() {
+  if (!initPromise) {
+    initPromise = (async () => {
+      await initializeDatabase();
+      await seedUsers();
+    })();
+  }
+  return initPromise;
+}
+
+app.use('/api', async (req, res, next) => {
+  try {
+    await ensureDb();
+    next();
+  } catch (err) {
+    console.error('❌ Database initialization failed during request:', err.message);
+    res.status(500).json({ error: 'Database initialization failed: ' + err.message });
+  }
+});
+
 // ── API Routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
@@ -70,29 +92,6 @@ if (env.nodeEnv === 'production') {
 
 // ── Centralized error handler (must be last) ──────────────────────────────────
 app.use(errorHandler);
-
-// ── Start server ─────────────────────────────────────────────────────────────
-let initPromise = null;
-function ensureDb() {
-  if (!initPromise) {
-    initPromise = (async () => {
-      await initializeDatabase();
-      await seedUsers();
-    })();
-  }
-  return initPromise;
-}
-
-// Middleware to ensure DB is initialized before handling any /api request
-app.use('/api', async (req, res, next) => {
-  try {
-    await ensureDb();
-    next();
-  } catch (err) {
-    console.error('❌ Database initialization failed during request:', err.message);
-    res.status(500).json({ error: 'Database initialization failed: ' + err.message });
-  }
-});
 
 // ── Start server ─────────────────────────────────────────────────────────────
 if (!process.env.VERCEL) {
