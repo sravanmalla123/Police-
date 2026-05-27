@@ -196,6 +196,77 @@ function LoginPage({ onLogin, theme, toggleTheme }) {
                 {loading ? 'Authenticating…' : `Authorize as ${activeMode}`}
               </button>
             </form>
+
+            {/* Quick Demo Credentials Panel */}
+            <div style={{ marginTop: '20px', borderTop: '1px solid var(--border-light)', paddingTop: '15px' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '10px' }}>
+                Demo Credentials (Click to Autofill)
+              </span>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveMode('Commissioner');
+                    setPayload({ loginId: 'demo@website.com', password: 'demo123', role: 'admin' });
+                  }}
+                  style={{
+                    padding: '8px 10px',
+                    fontSize: '0.78rem',
+                    textAlign: 'left',
+                    background: 'rgba(56, 189, 248, 0.05)',
+                    border: '1px solid rgba(56, 189, 248, 0.15)',
+                    borderRadius: '8px',
+                    color: '#e2e8f0',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'var(--primary)';
+                    e.currentTarget.style.background = 'rgba(56, 189, 248, 0.1)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.15)';
+                    e.currentTarget.style.background = 'rgba(56, 189, 248, 0.05)';
+                  }}
+                >
+                  <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '2px' }}>👑 Demo Admin</strong>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block' }}>ID: demo@website.com</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Pass: demo123</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveMode('SB Control');
+                    setSelectedRole('CI');
+                    setPayload({ loginId: 'demostaff@website.com', password: 'demo123', role: 'CI' });
+                  }}
+                  style={{
+                    padding: '8px 10px',
+                    fontSize: '0.78rem',
+                    textAlign: 'left',
+                    background: 'rgba(56, 189, 248, 0.05)',
+                    border: '1px solid rgba(56, 189, 248, 0.15)',
+                    borderRadius: '8px',
+                    color: '#e2e8f0',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'var(--primary)';
+                    e.currentTarget.style.background = 'rgba(56, 189, 248, 0.1)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.15)';
+                    e.currentTarget.style.background = 'rgba(56, 189, 248, 0.05)';
+                  }}
+                >
+                  <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '2px' }}>👮 Demo Staff</strong>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block' }}>ID: demostaff@website.com</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Pass: demo123</span>
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
