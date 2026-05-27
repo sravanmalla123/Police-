@@ -30,7 +30,7 @@ if (USE_MYSQL) {
     })
     .catch((err) => {
       console.error('❌ MySQL connection failed:', err.message);
-      process.exit(1);
+      if (!process.env.VERCEL) process.exit(1);
     });
 
   /**

@@ -12,8 +12,20 @@
     "dev:client": "npm run dev --prefix client",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\""
   },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.4",
+    "express-rate-limit": "^8.5.2",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.22.3",
+    "sqlite3": "^6.0.1"
+  },
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "dotenv": "^17.4.2"
+    "concurrently": "^8.2.2"
   }
 }

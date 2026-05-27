@@ -72,24 +72,41 @@ if (env.nodeEnv === 'production') {
 app.use(errorHandler);
 
 // ── Start server ─────────────────────────────────────────────────────────────
-async function start() {
-  try {
-    await initializeDatabase();
-    await seedUsers();
-    if (!process.env.VERCEL) {
-      app.listen(env.port, () => {
-        console.log(`🚀 Server running on port ${env.port} [${env.nodeEnv}]`);
-        console.log(`🌐 CORS allowed origins: ${allowedOrigins.join(', ')}`);
-      });
-    } else {
-      console.log('🚀 Vercel Serverless Function initialized.');
-    }
-  } catch (err) {
-    console.error('❌ Failed to start server:', err.message);
-    if (!process.env.VERCEL) process.exit(1);
+let initPromise = null;
+function ensureDb() {
+  if (!initPromise) {
+    initPromise = (async () => {
+      await initializeDatabase();
+      await seedUsers();
+    })();
   }
+  return initPromise;
 }
 
-start();
+// Middleware to ensure DB is initialized before handling any /api request
+app.use('/api', async (req, res, next) => {
+  try {
+    await ensureDb();
+    next();
+  } catch (err) {
+    console.error('❌ Database initialization failed during request:', err.message);
+    res.status(500).json({ error: 'Database initialization failed: ' + err.message });
+  }
+});
+
+// ── Start server ─────────────────────────────────────────────────────────────
+if (!process.env.VERCEL) {
+  ensureDb().then(() => {
+    app.listen(env.port, () => {
+      console.log(`🚀 Server running on port ${env.port} [${env.nodeEnv}]`);
+      console.log(`🌐 CORS allowed origins: ${allowedOrigins.join(', ')}`);
+    });
+  }).catch((err) => {
+    console.error('❌ Failed to start server:', err.message);
+    process.exit(1);
+  });
+} else {
+  console.log('🚀 Vercel Serverless Function initialized.');
+}
 
 export default app;
